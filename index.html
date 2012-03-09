@@ -1,0 +1,184 @@
+<!doctype html>
+<html>
+<head>
+<link href='http://fonts.googleapis.com/css?family=Buenard' rel='stylesheet' type='text/css'>
+<title>Changes to the Federal Budget</title>
+<style type="text/css">
+body {
+	font-family: 'Buenard', serif;
+	font-size: 18px;
+}
+#canvas, #bckgrnd, #label, #synopsis {
+	position: absolute;
+	left: 10px;
+}
+#bckgrnd {
+	top: 35px;
+}
+#label {
+	top: 68px;
+}
+#canvas {
+	top: 50px;
+}
+#header {
+	font-variant: small-caps;
+}
+#synopsis {
+	font-size: 14px;
+	position: absolute;
+	top: 550px;
+	width: 1000px;
+}
+#norm_button {
+	position: absolute;
+	left: 760px;
+	top: 10px;
+}
+</style>
+<script type="text/javascript" src="d3.v2.min.js"></script>
+<script src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js'
+type='text/javascript'></script>
+<script type="text/javascript">
+$(document).ready(function() {
+var budget = [{name:"National Defense", values: [0.11119999999999999, -0.018700000000000001, -0.0060000000000000001, 0.015900000000000001, 0.025899999999999999, 0.0123, -0.047399999999999998, 0.021399999999999999, -0.047399999999999998, -0.063200000000000006, 0.011599999999999999, -0.00080000000000000004, 0.015699999999999999, 0.0025000000000000001, 0.078200000000000006, 0.040300000000000002, 0.10100000000000001, 0.081600000000000006, 0.25969999999999999, 0.075700000000000003, 0.031, 0.099900000000000003, 0.125, 0.1125, 0.0022000000000000001, 0.0349]},
+{name:"Veterans Benefits and Services", values: [0.028799999999999999, -0.013599999999999999, 0.0109, 0.080699999999999994, 0.017100000000000001, 0.021299999999999999, 0.089200000000000002, 0.0258, 0.061699999999999998, 0.022200000000000001, 0.031, 0.015800000000000002, 0.030300000000000001, 0.071300000000000002, 0.0315, 0.029899999999999999, 0.046100000000000002, 0.095299999999999996, 0.13439999999999999, 0.024, 0.14480000000000001, 0.025600000000000001, 0.12089999999999999, 0.1101, 0.097799999999999998, 0.28939999999999999]},
+{name:"Transportation", values: [0.0085000000000000006, -0.023699999999999999, -0.064500000000000002, 0.0424, 0.042700000000000002, 0.0545, 0.0149, 0.17610000000000001, 0.094700000000000006, 0.0746, -0.095399999999999999, -0.068400000000000002, 0.12180000000000001, 0.1038, 0.13780000000000001, 0.073499999999999996, 0.21629999999999999, 0.022200000000000001, -0.0016999999999999999, 0.0339, 0.072800000000000004, -0.0071000000000000004, 0.0395, 0.035700000000000003, 0.53390000000000004, -0.25059999999999999]},
+{name:"Health", values: [0.062300000000000001, 0.090200000000000002, 0.12790000000000001, 0.1043, 0.13270000000000001, 0.17829999999999999, 0.2379, 0.2276, 0.17349999999999999, 0.072499999999999995, 0.0041999999999999997, -0.0608, 0.18490000000000001, 0.0378, 0.052400000000000002, 0.13569999999999999, 0.12509999999999999, 0.1341, 0.1244, 0.085300000000000001, 0.0014, 0.17249999999999999, -0.1726, 0.16800000000000001, 0.30969999999999998, 0.034299999999999997]},
+{name:"General Science, Space, and Technology", values: [0.037699999999999997, 0.013599999999999999, 0.35049999999999998, -0.1341, 0.19270000000000001, 0.13100000000000001, 0.12809999999999999, 0.0487, -0.0053, 0.021399999999999999, -0.051499999999999997, 0.001, -0.0030999999999999999, 0.078600000000000003, 0.048399999999999999, 0.023, 0.090499999999999997, 0.047100000000000003, 0.047, 0.0154, 0.041200000000000001, 0.0286, 0.048300000000000003, 0.052999999999999999, 0.26829999999999998, -0.1145]},
+{name:"Community and Regional Development", values: [-0.082900000000000001, -0.1565, -0.0344, 0.32840000000000003, -0.1075, 0.2457, -0.2102, 0.58509999999999995, -0.1741, 0.53610000000000002, -0.16650000000000001, -0.035200000000000002, 0.081900000000000001, -0.21679999999999999, 0.0625, -0.0025999999999999999, 0.29010000000000002, 0.58489999999999998, -0.27460000000000001, 0.086099999999999996, 3.6589999999999998, -0.63190000000000002, -0.43280000000000002, 1.3531, -0.42759999999999998, -0.16309999999999999]},
+{name:"General Government", values: [-0.0114, 0.030700000000000002, -0.3236, 0.18990000000000001, 0.0304, 0.2349, 0.048099999999999997, -0.0339, 0.0057000000000000002, -0.090999999999999998, 0.092499999999999999, -0.1275, 0.094299999999999995, 0.27129999999999999, 0.051400000000000001, -0.22009999999999999, 0.23649999999999999, 0.113, 0.40629999999999999, -0.0562, -0.29099999999999998, 0.1656, -0.052900000000000003, 0.15629999999999999, 0.40350000000000003, -0.040000000000000001]},
+{name:"Undistributed Offsetting Receipts", values: [0.023199999999999998, 0.0094000000000000004, 0.1045, 0.014, 0.0066, -0.016, 0.074899999999999994, -0.0019, -0.0482, 0.0103, 0.1769, -0.15379999999999999, 0.32840000000000003, -0.055599999999999997, -0.14299999999999999, 0.0528, 0.104, 0.0080999999999999996, 0.14749999999999999, 0.076399999999999996, 0.1142, 0.046399999999999997, 0.20499999999999999, 0.0487, 0.074200000000000002, -0.13930000000000001]},
+{name:"Income Security", values: [0.1139, -0.080199999999999994, 0.0123, 0.0487, 0.044400000000000002, 0.096600000000000005, 0.23039999999999999, 0.1235, 0.071300000000000002, 0.014, -0.0083000000000000001, 0.0339, 0.0247, 0.017100000000000001, 0.032099999999999997, 0.025100000000000001, 0.095100000000000004, 0.1331, 0.063799999999999996, 0.014200000000000001, 0.043900000000000002, 0.0058999999999999999, 0.0482, 0.158, 0.43269999999999997, 0.088400000000000006]},
+{name:"Natural Resources and Environment", values: [0.086099999999999996, -0.1215, 0.24390000000000001, 0.054899999999999997, 0.1043, 0.068400000000000002, 0.060100000000000001, 0.107, 0.016299999999999999, 0.044600000000000001, -0.073499999999999996, 0.0269, 0.066900000000000001, 0.061800000000000001, 0.0025000000000000001, 0.0246, 0.16020000000000001, 0.0722, 0.021399999999999999, 0.034000000000000002, 0.0047000000000000002, 0.1532, -0.1135, 0.1012, 0.54449999999999998, -0.31140000000000001]},
+{name:"Agriculture", values: [1.3411, 0.088300000000000003, -0.15110000000000001, -0.2772, 0.15110000000000001, -0.31459999999999999, 0.186, 0.30059999999999998, -0.1462, -0.109, -0.50219999999999998, 0.1265, 0.19089999999999999, 0.11269999999999999, 0.9022, 0.40089999999999998, -0.13850000000000001, -0.18440000000000001, 0.0458, 0.32840000000000003, -0.10680000000000001, -0.1235, -0.1108, -0.23419999999999999, 0.38319999999999999, 0.053199999999999997]},
+{name:"Energy", values: [0.1057, -0.30859999999999999, -0.43559999999999999, 0.57820000000000005, -0.2404, 0.21279999999999999, 0.0935, 0.1318, 0.35570000000000002, -0.42820000000000003, 0.063799999999999996, -0.4748, -0.35799999999999998, -0.82540000000000002, 2.3073999999999999, -2.2103999999999999, -1.0987, 2.4102999999999999, 0.37340000000000001, 4.8047000000000004, -0.59640000000000004, -0.76559999999999995, 1.1462000000000001, 5.5355999999999996, 9.1371000000000002, -0.79420000000000002]},
+];
+
+var presidents = [
+	{name: "Reagan", years: 4, color: '#EEE'},
+	{name: "Bush", years: 4, color: '#FFF'},
+	{name: "Clinton", years: 8, color: '#EEE'},
+	{name: "Bush", years: 8, color: '#FFF'},
+	{name: "Obama", years: 2, color: '#EEE'},
+];
+var w = 750;
+var h = 490;
+var data_normalized = new Boolean(true);
+/*
+var chart = d3.select('body').append('div')
+	.attr('class', 'chart')
+	.style('width', w+'px')
+	.style('height', h+'px');
+*/
+
+var bar_height = h/((budget.length) +1);
+var y = d3.scale.linear().range([0, bar_height-1]);
+var dy = d3.scale.linear().domain([0, d3.max(budget, function(x) { return d3.max(x.values); })]).range([0, bar_height-1]);
+
+d3.select('body')
+	.append('div')
+	.attr('id', 'canvas')
+	.style('width', w+'px')
+	.style('height', h+'px')
+	.style('z-index', '2');
+
+d3.select('body')
+	.append('div')
+	.attr('id', 'bckgrnd')
+	.style('width', w+'px')
+	.style('height', h+'px')
+	.style('z-index', '1');
+
+d3.select('#bckgrnd').selectAll('div')
+	.data(presidents)
+	.enter().append('div')
+	.style('width', function(d) { return d.years*w/26+'px'; })
+	.style('height', h+31+'px')
+	.style('float', 'left')
+	.style('background-color', function(d) { return d.color; })
+	.text(function(d) { return d.name; });
+
+var bars = d3.select('#canvas').selectAll('svg')
+	.data(budget)
+	.enter().append('svg:svg')
+	.attr('width', w)
+	.attr('height', bar_height)
+	.attr('x', 0)
+	.attr('y', function(d,i) { return i*bar_height; });
+
+bars.selectAll('svg')
+	.data(function(d) {
+		var m = d3.max(d.values);
+		return d.values.map(function(i) { 
+			return i/m;
+		});
+	})
+	.enter().append('rect')
+	.attr('width', function(d) { return w/budget[1].values.length -1; })
+	.attr('height', function(d) { return y(Math.abs(d)); })
+	.attr('x', function(d,i) { return i*(w/budget[1].values.length); })
+	.attr('y', function(d) { return bar_height - y(Math.abs(d)); })
+	.attr('stroke', function(d) { return (d < 0 ? '#CA0020' : '#0571B0') })
+	.attr('fill', function(d) { return (d < 0 ? '#F4A582' : '#92C5DE') });
+
+var labels = d3.select('body')
+	.append('div')
+	.style('left', w+10	+'px')
+	.attr('id', 'label');
+	
+labels.selectAll('div')
+	.data(budget.map( function(i) { return i.name; }))
+	.enter().append('div')
+	.style('height', bar_height+5+'px')
+	.html(function(d) { return d; });
+	
+d3.select('#norm_button').on('click', function() {
+
+	if(d3.select('#norm_button').attr('class') === 'denormalize') {
+		bars.selectAll('rect')
+		.data(function(d) { 
+			return d.values;
+		})
+		.transition()
+		.duration(1000)
+		.attr('height', function(d) { return dy(Math.abs(d)); })
+		.attr('y', function(d) { return bar_height - dy(Math.abs(d)); });
+		
+		d3.select('.denormalize')
+		.html('Normalize')
+		.attr('class', 'normalize');
+	} else {
+		bars.selectAll('rect')
+		.data(function(d) {
+			var m = d3.max(d.values);
+			return d.values.map(function(i) { 
+				return i/m;
+			});
+		})
+		.transition()
+		.duration(1000)
+		.attr('height', function(d) { return y(Math.abs(d)); })
+		.attr('y', function(d) { return bar_height - y(Math.abs(d)); });
+		
+		d3.select('.normalize')
+		.html('Denormalize')
+		.attr('class', 'denormalize');
+	}
+});
+
+});
+</script>
+</head>
+<body>
+<div id='header'>Changes to the FEDERAL BUDGET, <i>1985-2010</i></div>
+<button id="norm_button" class="denormalize">Denormalize</button>
+<div id='synopsis'><p>This visualization shows how budgets for various functions of the US government either grew (blue bars) or shrank (red bars) under different administrations from 1985 to 2010. Each bar represents a percentage change in the budget for that governmental function compared to the prior year's budget. It was created with the data available at <a href="http://whatwepayfor.com/">WhatWePayFor.com</a> using the <a href="http://mbostock.github.com/d3/">d3</a> Javascript library. Colors were chosen using <a href="http://colorbrewer2.org/">colorbrewer2.org</a>.</p>
+
+<p> By default, the data are normalized by budgetary function and can't be used to show, for example, that the budget for Transportation grew or shrank more than the budget for Health. The "Denormalize" button is a bit of a misnomer: clicking it normalizes the data <i>across</i> budgetary functions, depicting the differences in variability of budgets for government functions. You can see, for example, how much the budget for Energy changed in 2009 compared all other government functions from 1985-2010. Remember though that these are percentage changes, so this doesn't allow you to compare the <i>size</i> of the budgets, just the variation.</p>
+
+<p>Budgetary changes are depicted as absolute values. The sign of the change is captured only by the color of the bar, with red bars indicating a reduction. I'm a big fan of high density, small multiple graphics and I wanted to be able to utilize as much of the y-axis as possible. This is an extension of the idea presented by <a href="http://vis.stanford.edu/papers/horizon">Keer et al.</a> to discrete data. Based on comments from others, I think it's harder to interpret than with continuous data because there's no slope to suggest a trend.</p>
+
+<p>Given this difficulty, a couple of people have asked me why I don't represent the data continuously. I think it's a reasonable idea, but it's important to note that this data is <b>not</b> continuous.  Have a slope between data points would suggest that a budget either grew or shrank continuously over the course of a year, which isn't the case.</p>
+</body>
+</html>
